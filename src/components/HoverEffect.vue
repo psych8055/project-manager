@@ -39,6 +39,17 @@
           </select>
         </label>
       </div> -->
+      <div class="active-tags">
+        <span
+          v-for="(tag, index) in selectedTags"
+          :key="index"
+          class="tag-pill"
+        >
+          {{ tag }}
+          <button @click="removeTag(tag)">✖</button>
+        </span>
+      </div>
+
 
         <li class="list__item header">
           <span class="list__item-col hover-effect hover-effect--bg projectName">Project Name</span>
@@ -55,6 +66,7 @@
               </select>
             </label>
           </span>
+          <span class="list__item-col hover-effect hover-effect--bg collaborators">Collaborators</span>
           <span class="list__item-col hover-effect hover-effect--bg tags">
             <label>
               Tag:
@@ -81,7 +93,9 @@
             <span v-else class="text-red-500">❌</span>
           </span>
           <span class="list__item-col hover-effect hover-effect--bg year">{{ project.year }}</span>
+          <span class="list__item-col hover-effect hover-effect--bg collaborators"> {{project.collaborators[0]}}</span>
           <span class="list__item-col hover-effect hover-effect--bg tags">{{ project.tags.join(', ') }}</span>
+
         </li>
       </ul>
     </section>
@@ -171,7 +185,7 @@ function animateOnHover(el) {
   text-align: start;
 }
 .projectName{
-  width: 40%;
+  width: 30%;
 }
 .ClientName{
   width: 30%;
@@ -181,6 +195,9 @@ function animateOnHover(el) {
 }
 .live{
   width: 5%;
+}
+.collaborators{
+  width: 10%;
 }
 .tags{
   width:auto;

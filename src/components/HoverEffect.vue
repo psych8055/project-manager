@@ -94,13 +94,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { TextSplitter } from '../assets/js/textSplitter.js'
 import { gsap } from 'gsap'
-import SplitType from 'split-type'
-// import any extra files you need:
 import '../assets/css/base.css'
 import '../assets/js/index.js'
 import '../assets/js/utils.js'
 import { createTextAnimator } from '@/assets/js/text-animator.js'
-
 import { data as projectData } from '../assets/js/data.js'
 import { collaboratorsList } from '../assets/js/data.js'
 
@@ -108,15 +105,7 @@ const collaboratorMap = Object.fromEntries(
   collaboratorsList.data.map(collab => [collab.id, collab.client_name])
 )
 
-function getCollaboratorNames(collabIds) {
-  return collabIds
-    .map(id => collaboratorMap[id])
-    .filter(Boolean)
-}
-// const projects = projectData.data
-
 const animators = new Map()
-
 const projects = ref(projectData.data)
 const selectedYear = ref('')
 const selectedTag = ref('')
@@ -125,7 +114,8 @@ const selectedTag = ref('')
 const availableYears = [...new Set(projectData.data.map(p => p.year))]
 const availableTags = [...new Set(projectData.data.flatMap(p => p.tags))]
 
-// Computed projects based on filters
+
+
 const filteredProjects = computed(() => {
   return projects.value.filter(project => {
     const matchesYear = selectedYear.value ? project.year === selectedYear.value : true
@@ -134,6 +124,11 @@ const filteredProjects = computed(() => {
   })
 })
 
+function getCollaboratorNames(collabIds) {
+  return collabIds
+    .map(id => collaboratorMap[id])
+    .filter(Boolean)
+}
 
 function animate(e) {
   const el = e.currentTarget
@@ -157,20 +152,6 @@ function animateBack(e) {
     }
   })
 }
-
-function animateOnHover(el) {
-  // Create instance, splitting by characters
-  const splitter = new TextSplitter(el, { splitTypeTypes: 'chars' })
-
-  // Animate characters from y=100% to y=0%
-  gsap.fromTo(chars, { yPercent: 100 }, {
-    yPercent: 0,
-    stagger: 0.03, // ok, within one span
-    duration: 0.6,
-    ease: 'power2.out'
-  })
-}
-
 </script>
 
 <style scoped>

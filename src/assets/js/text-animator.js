@@ -31,7 +31,7 @@ export function createTextAnimator(textElement) {
         repeat: 2,
         repeatRefresh: true,
         repeatDelay: 0.05,
-        delay: (position + 1) * 0.06,
+        delay: (position + 1) * 0.04,
         innerHTML: () => lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)],
         opacity: 1
       });

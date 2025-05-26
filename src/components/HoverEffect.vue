@@ -208,4 +208,80 @@ function animateOnHover(el) {
 .mt-{
   margin-top: -15vh;
 }
+.header{
+  margin-top: 48px;
+  align-items: center;
+}
+.active-tags{
+  position: absolute;
+  left: 5%;
+  top: 0;
+}
+.tag-pill {
+  background: #f0f0f0;
+  color: #333;
+  padding: 0.1rem 0.8rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.tag-pill button:active {
+  border: none;
+  outline: none;
+}
+.tag-pill button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #555;
+}
+
+select {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 16px;
+  padding: 0.5rem 1.8rem 0.5rem 0.5rem;
+  ner-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+select:hover {
+  border-color: #999;
+}
+
+select:focus {
+  border-color: #000;
+}
+
+option {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 16px;
+  text-transform: capitalize;
+}
+.custom-select {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-select::after {
+  content: '▼';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
+}
+
 </style>

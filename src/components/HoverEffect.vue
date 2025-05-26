@@ -22,23 +22,6 @@
     <section class="content mt-">
       <h2 class="content__title">Project Palette</h2>
       <ul class="list list--bg list--bg-west">
-        <!-- <div class="filters" style="margin-bottom: 1rem; display: flex; gap: 1rem;">
-        <label>
-          Year:
-          <select v-model="selectedYear">
-            <option value="">All</option>
-            <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-          </select>
-        </label>
-
-        <label>
-          Tag:
-          <select v-model="selectedTag">
-            <option value="">All</option>
-            <option v-for="tag in availableTags" :key="tag" :value="tag">{{ tag }}</option>
-          </select>
-        </label>
-      </div> -->
       <div class="active-tags">
         <span
           v-for="(tag, index) in selectedTags"
@@ -53,7 +36,6 @@
 
         <li class="list__item header">
           <span class="list__item-col hover-effect hover-effect--bg projectName">Project Name</span>
-          <!-- <span class="list__item-col hover-effect hover-effect--bg ClientName">{{ project.client_name }}</span> -->
           <span class="list__item-col hover-effect hover-effect--bg live">
             Live
           </span>
@@ -87,7 +69,6 @@
           <a class="projectName" :href="project.url" target="_blank">
             <span class="list__item-col hover-effect hover-effect--bg">{{ project.project_name }}</span>
           </a>
-          <!-- <span class="list__item-col hover-effect hover-effect--bg ClientName">{{ project.client_name }}</span> -->
           <span class="list__item-col hover-effect hover-effect--bg live">
             <span v-if="project.is_live" class="text-green-500">✔️</span>
             <span v-else class="text-red-500">❌</span>
@@ -106,16 +87,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { TextSplitter } from '../assets/js/textSplitter.js'
 import { gsap } from 'gsap'
-import SplitType from 'split-type'
-// import any extra files you need:
 import '../assets/css/base.css'
 import '../assets/js/index.js'
 import '../assets/js/utils.js'
 import { createTextAnimator } from '@/assets/js/text-animator.js'
-
 import { data as projectData } from '../assets/js/data.js'
-
-// const projects = projectData.data
 
 const animators = new Map()
 
@@ -123,11 +99,9 @@ const projects = ref(projectData.data)
 const selectedYear = ref('')
 const selectedTag = ref('')
 
-// Extract unique years and tags
 const availableYears = [...new Set(projectData.data.map(p => p.year))]
 const availableTags = [...new Set(projectData.data.flatMap(p => p.tags))]
 
-// Computed projects based on filters
 const filteredProjects = computed(() => {
   return projects.value.filter(project => {
     const matchesYear = selectedYear.value ? project.year === selectedYear.value : true
@@ -135,7 +109,6 @@ const filteredProjects = computed(() => {
     return matchesYear && matchesTag
   })
 })
-
 
 function animate(e) {
   const el = e.currentTarget
@@ -157,19 +130,6 @@ function animateBack(e) {
     if (animators.has(span)) {
       animators.get(span).animateBack()
     }
-  })
-}
-
-function animateOnHover(el) {
-  // Create instance, splitting by characters
-  const splitter = new TextSplitter(el, { splitTypeTypes: 'chars' })
-
-  // Animate characters from y=100% to y=0%
-  gsap.fromTo(chars, { yPercent: 100 }, {
-    yPercent: 0,
-    stagger: 0.03, // ok, within one span
-    duration: 0.6,
-    ease: 'power2.out'
   })
 }
 

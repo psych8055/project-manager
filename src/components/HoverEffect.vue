@@ -22,35 +22,16 @@
     <section class="content mt-">
       <h2 class="content__title">Project Palette</h2>
       <ul class="list list--bg list--bg-west">
-        <!-- <div class="filters" style="margin-bottom: 1rem; display: flex; gap: 1rem;">
-        <label>
-          Year:
-          <select v-model="selectedYear">
-            <option value="">All</option>
-            <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-          </select>
-        </label>
-
-        <label>
-          Tag:
-          <select v-model="selectedTag">
-            <option value="">All</option>
-            <option v-for="tag in availableTags" :key="tag" :value="tag">{{ tag }}</option>
-          </select>
-        </label>
-      </div> -->
-      <div class="active-tags">
-        <span
-          v-for="(tag, index) in selectedTags"
-          :key="index"
-          class="tag-pill"
-        >
-          {{ tag }}
-          <button @click="removeTag(tag)">✖</button>
-        </span>
-      </div>
-
-
+        <div class="active-tags" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <span v-if="selectedYear" class="tag-pill">
+            {{ selectedYear }}
+            <button @click="selectedYear = ''">✖</button>
+          </span>
+          <span v-if="selectedTag" class="tag-pill">
+            {{ selectedTag }}
+            <button @click="selectedTag = ''">✖</button>
+          </span>
+        </div>
         <li class="list__item header">
           <span class="list__item-col hover-effect hover-effect--bg projectName">Project Name</span>
           <!-- <span class="list__item-col hover-effect hover-effect--bg ClientName">{{ project.client_name }}</span> -->
@@ -60,20 +41,24 @@
           <span class="list__item-col hover-effect hover-effect--bg year">
             <label>
               Year:
-              <select v-model="selectedYear">
-                <option value="">All</option>
-                <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-              </select>
+              <div class="custom-select">
+                <select v-model="selectedYear">
+                  <option value="">All</option>
+                  <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                </select>
+              </div>
             </label>
           </span>
           <span class="list__item-col hover-effect hover-effect--bg collaborators">Collaborators</span>
           <span class="list__item-col hover-effect hover-effect--bg tags">
             <label>
               Tag:
-              <select v-model="selectedTag">
-                <option value="">All</option>
-                <option v-for="tag in availableTags" :key="tag" :value="tag">{{ tag }}</option>
-              </select>
+              <div class="custom-select">
+                <select v-model="selectedTag">
+                  <option value="">All</option>
+                  <option v-for="tag in availableTags" :key="tag" :value="tag">{{ tag }}</option>
+                </select>
+              </div>
             </label>
           </span>
         </li>
@@ -93,9 +78,11 @@
             <span v-else class="text-red-500">❌</span>
           </span>
           <span class="list__item-col hover-effect hover-effect--bg year">{{ project.year }}</span>
-          <span class="list__item-col hover-effect hover-effect--bg collaborators"> {{project.collaborators[0]}}</span>
+          <span class="list__item-col hover-effect hover-effect--bg collaborators">
+            {{ getCollaboratorNames(project.collaborators).join(', ') }}
+          </span>
+          <!-- <span class="list__item-col hover-effect hover-effect--bg collaborators"> {{project.collaborators[0]}}</span> -->
           <span class="list__item-col hover-effect hover-effect--bg tags">{{ project.tags.join(', ') }}</span>
-
         </li>
       </ul>
     </section>
@@ -103,6 +90,7 @@
 </template>
 
 <script setup>
+
 import { ref, computed, onMounted } from 'vue'
 import { TextSplitter } from '../assets/js/textSplitter.js'
 import { gsap } from 'gsap'
@@ -114,7 +102,17 @@ import '../assets/js/utils.js'
 import { createTextAnimator } from '@/assets/js/text-animator.js'
 
 import { data as projectData } from '../assets/js/data.js'
+import { collaboratorsList } from '../assets/js/data.js'
 
+const collaboratorMap = Object.fromEntries(
+  collaboratorsList.data.map(collab => [collab.id, collab.client_name])
+)
+
+function getCollaboratorNames(collabIds) {
+  return collabIds
+    .map(id => collaboratorMap[id])
+    .filter(Boolean)
+}
 // const projects = projectData.data
 
 const animators = new Map()
@@ -139,8 +137,8 @@ const filteredProjects = computed(() => {
 
 function animate(e) {
   const el = e.currentTarget
-  const spans = el.querySelectorAll('span')
-
+  const spans = el.querySelectorAll('.hover-effect')
+  
   spans.forEach(span => {
     if (!animators.has(span)) {
       animators.set(span, new createTextAnimator(span))
@@ -151,8 +149,8 @@ function animate(e) {
 
 function animateBack(e) {
   const el = e.currentTarget
-  const spans = el.querySelectorAll('span')
-
+  const spans = el.querySelectorAll('.hover-effect')
+  
   spans.forEach(span => {
     if (animators.has(span)) {
       animators.get(span).animateBack()
@@ -176,6 +174,8 @@ function animateOnHover(el) {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap');
+
 /* Optionally override styles here if needed */
 .hover-effect span {
   display: inline-block;
@@ -184,11 +184,17 @@ function animateOnHover(el) {
 .list__item-col, .projectName{
   text-align: start;
 }
+.list{
+  position: relative;
+}
 .projectName{
-  width: 30%;
+  width: 25%;
 }
 .ClientName{
   width: 30%;
+}
+.header .year, .header .tags{
+  margin-bottom: 4px;
 }
 .year{
   width: 10%;
@@ -197,7 +203,7 @@ function animateOnHover(el) {
   width: 5%;
 }
 .collaborators{
-  width: 10%;
+  width: 22%;
 }
 .tags{
   width:auto;
@@ -208,4 +214,80 @@ function animateOnHover(el) {
 .mt-{
   margin-top: -15vh;
 }
+.header{
+  margin-top: 48px;
+  align-items: center;
+}
+.active-tags{
+  position: absolute;
+  left: 5%;
+  top: 0;
+}
+.tag-pill {
+  background: #f0f0f0;
+  color: #333;
+  padding: 0.1rem 0.8rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.tag-pill button:active {
+  border: none;
+  outline: none;
+}
+.tag-pill button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #555;
+}
+
+select {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 16px;
+  padding: 0.5rem 1.8rem 0.5rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+select:hover {
+  border-color: #999;
+}
+
+select:focus {
+  border-color: #000;
+}
+
+option {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 16px;
+  text-transform: capitalize;
+}
+.custom-select {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-select::after {
+  content: '▼';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
+}
+
 </style>

@@ -13,58 +13,81 @@ export function createTextAnimator(textElement) {
   });
 
   const originalChars = splitter.getChars().map(char => char.innerHTML);
+  let currentAnimation = null;
 
   function animate() {
-    reset(); // cancel any ongoing tweens
+    // Kill any existing animation
+    if (currentAnimation) {
+      currentAnimation.kill();
+    }
 
     const chars = splitter.getChars();
-
+    
+    // Create a timeline for better control
+    const tl = gsap.timeline();
+    
+    // Add character animations to timeline
     chars.forEach((char, position) => {
       const initialHTML = char.innerHTML;
-
-      gsap.fromTo(char, {
-        opacity: 0,
-      },
-      {
-        duration: 0.03,
-        onComplete: () => gsap.set(char, { innerHTML: initialHTML }),
-        repeat: 2,
-        repeatRefresh: true,
-        repeatDelay: 0.05,
-        delay: (position + 1) * 0.06,
-        innerHTML: () => lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)],
-        opacity: 1
-      });
+      
+      tl.fromTo(char, 
+        { opacity: 0 },
+        {
+          duration: 0.03,
+          opacity: 1,
+          onStart: () => {
+            char.innerHTML = lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
+          },
+          onComplete: () => {
+            char.innerHTML = initialHTML;
+          },
+          repeat: 2,
+          repeatRefresh: true,
+          repeatDelay: 0.05,
+          delay: position * 0.04,
+        }, 0
+      );
     });
 
-    gsap.fromTo(textElement, {
-      '--anim': 0
-    },
-    {
-      duration: 1,
-      ease: 'expo',
-      '--anim': 1
-    });
+    // Add background animation
+    tl.to(textElement, {
+      '--anim': 1,
+      duration: 0.3,
+      ease: 'power2.out'
+    }, 0);
+
+    currentAnimation = tl;
   }
 
-  function reset() {
+  function animateBack() {
+    if (currentAnimation) {
+      currentAnimation.kill();
+    }
+
     const chars = splitter.getChars();
-  
+    
+    // Create a new timeline for reset
+    const tl = gsap.timeline();
+    
+    // Reset characters
     chars.forEach((char, index) => {
-      gsap.killTweensOf(char);
       char.innerHTML = originalChars[index];
+      gsap.set(char, { opacity: 1 });
     });
-  
-    // Animate background reset smoothly
-    gsap.to(textElement, {
-      duration: 0.6,
-      ease: 'power4.out',
-      '--anim': 0
+
+    // Reset background
+    tl.to(textElement, {
+      '--anim': 0,
+      duration: 0.2,
+      ease: 'power1.out',
+      clearProps: 'all'
     });
+
+    currentAnimation = tl;
   }
-  
+
   return {
     animate,
-    reset
+    animateBack
   };
 }
